@@ -13,7 +13,8 @@ namespace GitPuller
     {
         static void Main(string[] args)
         {
-            int totalFoldersScanned = 0, totalFoldersSkipped = 0;
+            int totalFoldersScanned = 0;
+            List<string> skippedFolders = new List<string>();
 
             //! Set the git directory setting if it wasn't set yet.
             if (String.IsNullOrWhiteSpace(Settings.Default.GitDirectory))
@@ -71,7 +72,7 @@ namespace GitPuller
                 //! If it's not a GIT repository...
                 if (stderr_str.Contains(".git"))
                 {
-                    ++totalFoldersSkipped;
+                    skippedFolders.Add(Path.GetFileName(dir));
                     continue;
                 }
 
@@ -84,7 +85,18 @@ namespace GitPuller
             }
 
             Console.WriteLine("\n\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
-            Console.WriteLine("Finished! A total of {0} folders were scanned of which {1} were skipped as they were not Git repositories.", totalFoldersScanned, totalFoldersSkipped);
+            Console.WriteLine("Finished! A total of {0} folders were scanned of which {1} were skipped as they were not Git repositories.", totalFoldersScanned, skippedFolders.Count);
+
+            if (skippedFolders.Count > 0)
+            {
+                Console.WriteLine("\nSkipped repositories:");
+
+                foreach (string skippedDir in skippedFolders)
+                    Console.WriteLine(skippedDir);
+
+                Console.WriteLine();
+            }
+
             Console.WriteLine("\nPress any key to exit.");
             Console.ReadKey();
         }
