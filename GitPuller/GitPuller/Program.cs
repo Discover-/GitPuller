@@ -19,11 +19,25 @@ namespace GitPuller
             //! Set the git directory setting if it wasn't set yet.
             if (String.IsNullOrWhiteSpace(Settings.Default.GitDirectory))
             {
-                Console.Write("Set your Git directory (git.exe): ");
+                Console.Write("Point me to where Git.exe is located: ");
                 string newGitDir = Console.ReadLine();
 
                 while (String.IsNullOrWhiteSpace(newGitDir) || !Path.HasExtension(newGitDir))
                 {
+                    if (!String.IsNullOrWhiteSpace(newGitDir) && !Path.HasExtension(newGitDir) && Directory.Exists(newGitDir))
+                    {
+                        var di = new DirectoryInfo(newGitDir);
+
+                        if (di.GetFiles("git.exe").Length == 1)
+                        {
+                            if (File.Exists(newGitDir + "\\git.exe"))
+                            {
+                                newGitDir += "\\git.exe";
+                                break;
+                            }
+                        }
+                    }
+
                     Console.Write("This is not a valid Git directory. Try again: ");
                     newGitDir = Console.ReadLine();
                 }
